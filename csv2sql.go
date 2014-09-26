@@ -165,6 +165,7 @@ func main() {
 	//-------------------------------------------------------------------------
 	// open and prepare the CSV input file
 	//-------------------------------------------------------------------------
+	// TODO:  manage multiple input files (ie csv2sql -f * -t testtable[1..x]) ??
 	if debugSwitch {
 		fmt.Println("Opening the CSV file:", csvFileName)
 	}
@@ -325,7 +326,7 @@ func main() {
 	}
 	fmt.Println("\nDONE\n\tCSV file processing complete, and the new SQL file format was written to: ", sqlOutFile)
 	// finished the SQl file data writing - flush any IO buffers
-	// NB above required as the data was being lost otherwise - maybe a bug in go version 1.2 only?
+	// NB below flush required as the data was being lost otherwise - maybe a bug in go version 1.2 only?
 	sqlFileBuffer.Flush()
 	// reset the string buffer - so it is empty as it is no longer needed
 	strbuffer.Reset()
@@ -341,6 +342,8 @@ func main() {
 //  cleanHeader receives a string and removes the characters: space | - + @ # / \ : ( ) '
 //  Function is used to clean up the CSV file header fields as they will be used for column table names
 //  in our SQLIte database. Therefore we don't want any odd characters for our table column names
+//
+//  TODO:  consider using: strings.NewReplacer function instead?
 //
 func cleanHeader(headField string) string {
 	// ok - remove any spaces and replace with _
@@ -369,4 +372,3 @@ func cleanHeader(headField string) string {
 	headField = strings.Replace(headField, "'", "_", -1)
 	return headField
 }
-
