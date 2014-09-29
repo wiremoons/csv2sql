@@ -31,10 +31,10 @@ $(OUTNAME): $(SRC)
 	$(LIN64) $(CC) $(CFLAGS) -o $(OUTNAME) $(SRC)
 
 lin32: $(SRC)
-	$(LIN32) $(CC) $(CFLAGS) -o $(OUTNAME)-x386 $(SRC)
+	$(LIN32) $(CC) $(CFLAGS) -o $(OUTNAME)-linx386 $(SRC)
 
 lin64: $(SRC)
-	$(LIN64) $(CC) $(CFLAGS) -o $(OUTNAME) $(SRC)
+	$(LIN64) $(CC) $(CFLAGS) -o $(OUTNAME)-linx64 $(SRC)
 
 win32: $(SRC)
 	$(WIN32) $(CC) $(CFLAGS) -o $(OUTNAME)-x386.exe $(SRC)

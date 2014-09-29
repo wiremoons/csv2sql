@@ -1,19 +1,21 @@
 /*
 
    csv2sql - conversion program to convert a csv file to sql format
-   		to allow easy checking / validation, and import into a SQLite3
-   		database using SQLite  '.read' command
+   		to allow easy checking / validation, and for import into a SQLite3
+   		database using the SQLite  '.read' command
 
 	author: simon rowe <simon@wiremoons.com>
 	license: open-source released under "New BSD License"
 
-   version: 0.5
+   version: 0.6
    created: 16th April 2014 - initial outline code written
    updated: 17th April 2014 - add flags and output file handling
    updated: 27th April 2014 - wrap in double quotes instead of single
    updated: 28th April 2014 - add flush io file buffer to fix SQL missing EOF
    updated: 19th July 2014 - add more help text, tidy up comments and code
    updated: 6th August 2014 - enabled the -k flag to alter the table header characters
+   updated: 28th September 2014 -  changed default output when run with no params, add -h
+                                   to display the help info and also still call flags.Usage()
 
 */
 package main
@@ -35,13 +37,15 @@ import (
 // set global variables
 
 // set the version of the app here
-var appversion string = "0.5"
+// TODO - maybe check for newer version and update if needed
+var appversion string = "0.6"
 
 // below used by flag for command line args
 var tableName string
 var csvFileName string
 var keepOrigCols bool
 var debugSwitch bool
+var helpMe bool
 
 // init() function - always runs before main() - used here to set-up required flags variables
 // from the command line parameters provided by the user when they run the app
@@ -51,6 +55,7 @@ func init() {
 	flag.StringVar(&csvFileName, "f", "", "\tUSE: '-f filename.csv' where filename.csv is the name and path to a CSV file that contains your data for conversion [MANDATORY]")
 	flag.BoolVar(&keepOrigCols, "k", false, "\tUSE: '-k=true' to keep original csv header fields as the SQL table column names")
 	flag.BoolVar(&debugSwitch, "d", false, "\tUSE: '-d=true' to include additional debug output when run")
+	flag.BoolVar(&helpMe, "h", false, "\tUSE: '-h' to provide more detailed help on using this program")
 }
 
 //
@@ -81,54 +86,76 @@ func SQLFileName() (filename string) {
 //  any command line parameters - so assumes you want help to run it
 //
 func printBanner() {
-	// add the help and about text to the variable 'about'
+	// add the help and about text to the variable 'about' in the form shown below
+	// as a block of text. This will displayed to the screen later.
 	about := `
-    ABOUT CSV2SQL
-    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+ABOUT CSV2SQL
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯
     CVS2SQL is a small simple program specifically designed to quickly convert a 
-    coma separated value (CSV) file into structured query language (SQL) 
-    statements, that can then be used as an import source for an SQLite database.
+    comma separated value (CSV) file into simple structured query language (SQL) 
+    statements, which can then be used as an import source for an SQLite database.
 
-    The CSV file is also integrity checked while being converted to ensure it
-    has a consistent number of column values throughout the file.
-
-    The first line of your CSV file will be designated as the header line - and 
-    therefore will become the column names in your subsequent SQLite database 
-    table.
-
-    Please note that any spaces or the following characters | - + @ # / \ : ( ) '
-    will be replaced in the column names with the underscore character (ie '_').
+    Key features include:
     
-    This is to avoid SQL syntax import issues, and make any future SQL statements
-    referencing these column names easier to construct. You can of course rename
-    these characters in your CSV file first. Or use the command line switch
-    ' -k=true ' to force them to be left as is.
+       * The CSV file is integrity checked while being converted to SQL - to 
+       ensure it has a consistent number of column values. In other words the 
+       number of commas in the header (first line) of the CSV file, are the same
+       throughout the rest of the file too.
 
-    The rest of the CSV file will be split up on the comma character, on a per 
-    line basis. The eventual contents in your new database table will therefore
-    be aligned to the column values - so each table row is a line from the CSV
-    file.
+       * The first line of your CSV file will be designated as the header line -
+       and therefore will become the column names in your subsequent SQLite 
+       database table.
+
+       * Any spaces or the following characters | - + @ # / \ : ( ) '
+       found in the header line of you CSV file, will be replaced when they are
+       used as the subsequent column names for your new SQLite table. These 
+       characters will be replaced with the underscore character (ie '_'). These
+       changes only apply to the header line, and are carried out to avoid SQL 
+       syntax import issues, and make any future SQL statements referencing these 
+       column names easier to construct. This default feature can be disabled by
+       using the command line parameter ' -k=true ' if you wish.
+
+       * You choose and specify the table name the CSV file contents will be 
+       imported into in your SQLite database when you run the program.
+
+       * The output file is a plain text file. It just contains the SQL commands 
+       that are used by SQLite to create and then insert all your data into your
+       specified new table. The output file can therefore be edited (if you wish) 
+       to adapt it further - perhaps to suit you own needs.
+    
+FURTHER BACKGROUND
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    The CSV file specified will be read and then split up on the comma character,
+    on a per line basis. The first line of the CSV file is used as the column names
+    in your new SQLite table. The eventual contents in your new database table will 
+    therefore be a table row for each line read from the CSV file.
 
     The output filename (ie <sql-filename.sql>) will be created 
     automatically for you when you run the program. Note that it will also 
     overwrite / replace any existing file with the same name! The filename it
     will create will be based on your input filename, prefixed with 'SQL' and 
-    the file extension changed to '.sql'. So 'test-123.csv' -> 'SQL-test-123.sql'. 
+    the file extension set to '.sql'. So 'test-123.csv' -> 'SQL-test-123.sql'. 
 
     The newly generated output file will contain the SQL statements to allow
     the contents of your CSV file to be imported into a new SQLite database 
-    table. The table name to be used must be provide on the command line also
+    table. The table name to be used must be provided on the command line
     as ' -t tablename ' - where tablename is the name of the SQLite table to 
     hold your CSV file data. 
 
-    To import the table and it contents, open your SQLite database with the 
-    sqlite3 program, and use:  .read <sql-filename.sql>
- 
+HOW TO USE THE OUTPUT
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    To import the table and its contents, open your SQLite database with the 
+    sqlite3 program, and use to command:  .read <sql-filename.sql>
+
+FURTHER INFORMATION
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
     Latest version is kept on GitHub here: https://github.com/wiremoons
     The program is written in Go - more information here: http://www.golang.org/
     More information on SQLite can be found here: http://www.sqlite.org/
-    The program was written by Simon Rowe, licensed under "New BSD License"
-	`
+    The program was written by Simon Rowe, and is licensed under the "New BSD License"
+
+COMMAND LINE USAGE
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯`
 	// now display the information on screen
 	fmt.Println("\n\t\t\tcsv2sql conversion program\n\t\t\t\tVersion:", appversion, "\n", about)
 }
@@ -145,19 +172,35 @@ func main() {
 	//-------------------------------------------------------------------------
 	// get the command line args passed to the program
 	flag.Parse()
+	// confirm debug mode is enabled
+	if debugSwitch {
+		fmt.Println("DEBUG: Debug mode enabled")
+	}
 	// if debug is enabled - confirm the command line parameters received
 	if debugSwitch {
 		fmt.Println("Command Line Arguments provided are:")
 		fmt.Println("\tCSV file to use:", csvFileName)
 		fmt.Println("\tSQL table name to use:", tableName)
 		fmt.Println("\tKeep original csv header fields:", strconv.FormatBool(keepOrigCols))
-		fmt.Println("\tDisplay additional debug output when run:", strconv.FormatBool(debugSwitch))
+		fmt.Println("\tDisplay debug output when run:", strconv.FormatBool(debugSwitch))
+		fmt.Println("\tDisplay additional help:", strconv.FormatBool(helpMe))
+	}
+
+	// check if the user just wanted to know more information by using the command line flag '-h'
+	if helpMe {
+		// call function to display information about the application
+		printBanner()
+		// call to display the standard command lines usage info
+		flag.Usage()
+		// let user know we ran as expected
+		fmt.Println("\n\nAll is well.\n")
+		// exit the application
+		os.Exit(-3)
 	}
 
 	// check we have a table name and csv file to work with - otherwise abort
 	if csvFileName == "" || tableName == "" {
-		printBanner()
-		fmt.Println("ERROR: please provide both a 'table name' and the input 'CSV filename' to use\nrun 'csv2sql --help' for more information")
+		fmt.Println("ERROR: please provide both a 'table name' and the input 'CSV filename' to use\nrun 'csv2sql -h' for more information")
 		//fmt.Println("Usage:",flag.Usage,"Command Line:",flag.CommandLine)
 		os.Exit(-2)
 	}
