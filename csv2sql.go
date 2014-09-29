@@ -37,7 +37,7 @@ import (
 // set global variables
 
 // set the version of the app here
-// TODO - maybe check for newer version and update if needed
+// TODO - maybe check for newer version and update if needed?
 var appversion string = "0.6"
 
 // below used by flag for command line args
@@ -49,6 +49,8 @@ var helpMe bool
 
 // init() function - always runs before main() - used here to set-up required flags variables
 // from the command line parameters provided by the user when they run the app
+// TODO:  add -s for silent (no output unless error) | add -v to just display current version (how to add build date too?)
+//
 func init() {
 	// IntVar; StringVar; BoolVar all required: variable, cmd line flag, initial value, description used by flag.Usage() on error / help
 	flag.StringVar(&tableName, "t", "", "\tUSE: '-t tablename' where tablename is the name of the SQLite table to hold your CSV file data [MANDATORY]")
@@ -59,17 +61,19 @@ func init() {
 }
 
 //
-//  FUNCTION: create a filename string for the SQL data to be written too - return it
+//  FUNCTION: create a string to be used as the filename for the output SQL data file - return it
 //
 func SQLFileName() (filename string) {
 	// include the name of the csv file from command line (ie csvFileName)
 	// remove any path etc
 	var justFileName = filepath.Base(csvFileName)
+	// get the files extension too
 	var extension = filepath.Ext(csvFileName)
-	// remove the file extn
+	// remove the file extension from the filename
 	justFileName = justFileName[0 : len(justFileName)-len(extension)]
 	// get a date and time stamp - use GoLang reference date of: Mon Jan 2 15:04:05 MST 2006
 	// TODO: figure out how to make this work - so filename has timestamp too ??
+	//       will help stop the previously generated file being overwitten each time it is run
 	//fileDate, err := time.Parse("2006-01-02", time.Now().String())
 	//if err != nil {
 	//	panic(err)
@@ -81,9 +85,9 @@ func SQLFileName() (filename string) {
 }
 
 //
-//  FUNCTION: display a banner and help information on the screen
-//  information is displayed when the program is run without including
-//  any command line parameters - so assumes you want help to run it
+//  FUNCTION: display a banner and help information on the screen.
+//  Information is displayed when the program is run with -h
+//  command line parameter - so assumes you want addtional help
 //
 func printBanner() {
 	// add the help and about text to the variable 'about' in the form shown below
@@ -231,7 +235,7 @@ func main() {
 	//-------------------------------------------------------------------------
 	// get a new filename to write the SQl converted data into - call our
 	// function SQLFileName() to obtain a suitable string for the new filename
-	// TODO : ad option to output to stdout instead of a file only
+	// TODO : add option to output to stdout instead of a file only
 	sqlOutFile := SQLFileName()
 	if debugSwitch {
 		fmt.Println("Opening the SQL output file:", sqlOutFile)
@@ -289,7 +293,7 @@ func main() {
 		// if we are processing the first line - use the record field contents
 		// as the SQL table column names - add to the temp string 'strbuffer'
 		// use the tablename provided by the user
-		// TODO - add option to skip this line if user is adding data to an existing table?
+		// TODO : - add option to skip this line if user is adding data to an existing table?
 		if lineCount == 0 {
 			strbuffer.WriteString("PRAGMA foreign_keys=OFF;\nBEGIN TRANSACTION;\nCREATE TABLE " + tableName + " (")
 		}
@@ -386,7 +390,7 @@ func main() {
 //  Function is used to clean up the CSV file header fields as they will be used for column table names
 //  in our SQLIte database. Therefore we don't want any odd characters for our table column names
 //
-//  TODO:  consider using: strings.NewReplacer function instead?
+//  TODO : consider using: strings.NewReplacer function instead?
 //
 func cleanHeader(headField string) string {
 	// ok - remove any spaces and replace with _
