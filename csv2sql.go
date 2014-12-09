@@ -16,6 +16,7 @@
    updated: 6th August 2014 - enabled the -k flag to alter the table header characters
    updated: 28th September 2014 -  changed default output when run with no params, add -h
                                    to display the help info and also still call flags.Usage()
+   updated: 09th December 2014 - minor tidy up and first 'release' provided on GitHub
 
 */
 package main
@@ -38,7 +39,10 @@ import (
 
 // set the version of the app here
 // TODO - maybe check for newer version and update if needed?
-var appversion string = "0.6"
+// TODO - make more stdout/stderror friendly for command line use
+// TODO - provide option to use with pipes to feed-in csv file and pipe output
+//
+var appversion string = "1.0"
 
 // below used by flag for command line args
 var tableName string

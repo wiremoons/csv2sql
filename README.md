@@ -96,27 +96,9 @@ make all
 
 ## Downloading Binary Version
 
-The following binary versions are available for download. Just download the file to your computer (either the .exe. or .zip version), copy the file so it is in you current path, and then run it. You may want to rename the downloaded file to just `csv2sql` (Linux & Mac OS X) or `csv2sql.exe` (Windows) as well.
+Pre-compiled binaries are available from the `csv2sql` Release page below. These are provide for Windows (32bit and 64bit), MacOSX (64bit), and Linux (64bit):
 
-**Linux (64 bit)**
-- [Binary in zip file](https://github.com/wiremoons/csv2sql/blob/master/binaries/csv2sql-linx64.zip)
-- [Binary file](https://github.com/wiremoons/csv2sql/blob/master/binaries/csv2sql-linx64)
-
-**Mac OS X (64 bit)**
-- [Binary in zip file](https://github.com/wiremoons/csv2sql/blob/master/binaries/csv2sql-macx64.zip)
-- [Binary file](https://github.com/wiremoons/csv2sql/blob/master/binaries/csv2sql-macx64)
-
-**Mac OS X (64 bit)**
-- [Binary in zip file](https://github.com/wiremoons/csv2sql/blob/master/binaries/csv2sql-macx64.zip)
-- [Binary file](https://github.com/wiremoons/csv2sql/blob/master/binaries/csv2sql-macx64)
-
-**Windows (64 bit)**
-- [Binary in zip file](https://github.com/wiremoons/csv2sql/blob/master/binaries/csv2sql-x64.zip)
-- [Binary file](https://github.com/wiremoons/csv2sql/blob/master/binaries/csv2sql-x64.exe)
-
-**Windows (32 bit)**
-- [Binary in zip file](https://github.com/wiremoons/csv2sql/blob/master/binaries/csv2sql-x386.zip)
-- [Binary file](https://github.com/wiremoons/csv2sql/blob/master/binaries/csv2sql-x386.exe)
+- [csv2sql Release 1.0](https://github.com/wiremoons/csv2sql/releases/tag/1.0)
 
 
 ## Example Usage
