@@ -7,16 +7,16 @@
 	author: simon rowe <simon@wiremoons.com>
 	license: open-source released under "New BSD License"
 
-   version: 0.6
-   created: 16th April 2014 - initial outline code written
-   updated: 17th April 2014 - add flags and output file handling
-   updated: 27th April 2014 - wrap in double quotes instead of single
-   updated: 28th April 2014 - add flush io file buffer to fix SQL missing EOF
-   updated: 19th July 2014 - add more help text, tidy up comments and code
-   updated: 6th August 2014 - enabled the -k flag to alter the table header characters
-   updated: 28th September 2014 -  changed default output when run with no params, add -h
+   created: 16 Apr 2014 - initial outline code written
+   updated: 17 Apr 2014 - add flags and output file handling
+   updated: 27 Apr 2014 - wrap in double quotes instead of single
+   updated: 28 Apr 2014 - add flush io file buffer to fix SQL missing EOF
+   updated: 19 Jul 2014 - add more help text, tidy up comments and code
+   updated: 06 Aug 2014 - enabled the -k flag to alter the table header characters
+   updated: 28 Sep 2014 -  changed default output when run with no params, add -h
                                    to display the help info and also still call flags.Usage()
-   updated: 09th December 2014 - minor tidy up and first 'release' provided on GitHub
+   updated: 09 Dec 2014 - minor tidy up and first 'release' provided on GitHub
+   updated: 27 Aug 2016 - table name and csv file help output minior changes. Minor cosmetic stuff. Version 1.1
 
 */
 package main
@@ -42,7 +42,7 @@ import (
 // TODO - make more stdout/stderror friendly for command line use
 // TODO - provide option to use with pipes to feed-in csv file and pipe output
 //
-var appversion string = "1.0"
+var appversion string = "1.1"
 
 // below used by flag for command line args
 var tableName string
@@ -208,7 +208,7 @@ func main() {
 
 	// check we have a table name and csv file to work with - otherwise abort
 	if csvFileName == "" || tableName == "" {
-		fmt.Println("ERROR: please provide both a 'table name' and the input 'CSV filename' to use\nrun 'csv2sql -h' for more information")
+		fmt.Println("ERROR: please provide both a '-t table_name' and the input '-f \"CSV input filename\"' to use\nrun 'csv2sql -h' for more information")
 		//fmt.Println("Usage:",flag.Usage,"Command Line:",flag.CommandLine)
 		os.Exit(-2)
 	}
