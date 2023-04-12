@@ -16,10 +16,12 @@ LIN64=GOOS=linux GOARCH=amd64
 WIN32=GOOS=windows GOARCH=386
 # To build Windows 64 bit version:
 WIN64=GOOS=windows GOARCH=amd64
-# To build Mac OS X 32 bit version:
+# To build macOS 32 bit version:
 MAC32=GOOS=darwin GOARCH=386
-# To build Mac OS X 64 bit version:
+# To build macOS 64 bit version:
 MAC64=GOOS=darwin GOARCH=amd64
+# To build macOS M1 or M2 arm64 version:
+ARM64=GOOS=darwin GOARCH=arm64
 
 LIBFLAGS=
 #-DWIN32_LEAN_AND_MEAN -DUSE_MINGW_ANSI_STDIO=1
@@ -48,7 +50,10 @@ mac32: $(SRC)
 mac64: $(SRC)
 	$(MAC64) $(CC) $(CFLAGS) -o $(OUTNAME)-macx64 $(SRC)
 
-clean:
-	rm $(OUTNAME).exe $(OUTNAME)-x64.exe $(OUTNAME)-x386.exe $(OUTNAME) $(OUTNAME)-x386 $(OUTNAME)-macx64 $(OUTNAME)-mac386
+arm64: $(SRC)
+	$(ARM64) $(CC) $(CFLAGS) -o $(OUTNAME)-arm64 $(SRC)
 
-all: lin64 win32 win64 mac64
+clean:
+	rm $(OUTNAME).exe $(OUTNAME)-x64.exe $(OUTNAME)-x386.exe $(OUTNAME) $(OUTNAME)-x386 $(OUTNAME)-macx64 $(OUTNAME)-mac386 $(OUTNAME)-arm64 $(OUTNAME)-linx64 
+ 
+all: lin64 win64 mac64 arm64
