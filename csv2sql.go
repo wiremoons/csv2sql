@@ -1,23 +1,22 @@
 /*
+	   csv2sql - conversion program to convert a csv file to sql format
+	   		to allow easy checking / validation, and for import into a SQLite3
+	   		database using the SQLite  '.read' command
 
-   csv2sql - conversion program to convert a csv file to sql format
-   		to allow easy checking / validation, and for import into a SQLite3
-   		database using the SQLite  '.read' command
+		author: simon rowe <simon@wiremoons.com>
+		license: open-source released under "New BSD License"
 
-	author: simon rowe <simon@wiremoons.com>
-	license: open-source released under "New BSD License"
-
-   created: 16 Apr 2014 - initial outline code written
-   updated: 17 Apr 2014 - add flags and output file handling
-   updated: 27 Apr 2014 - wrap in double quotes instead of single
-   updated: 28 Apr 2014 - add flush io file buffer to fix SQL missing EOF
-   updated: 19 Jul 2014 - add more help text, tidy up comments and code
-   updated: 06 Aug 2014 - enabled the -k flag to alter the table header characters
-   updated: 28 Sep 2014 -  changed default output when run with no params, add -h
-                                   to display the help info and also still call flags.Usage()
-   updated: 09 Dec 2014 - minor tidy up and first 'release' provided on GitHub
-   updated: 27 Aug 2016 - table name and csv file help output minior changes. Minor cosmetic stuff. Version 1.1
-
+	   created: 16 Apr 2014 - initial outline code written
+	   updated: 17 Apr 2014 - add flags and output file handling
+	   updated: 27 Apr 2014 - wrap in double quotes instead of single
+	   updated: 28 Apr 2014 - add flush io file buffer to fix SQL missing EOF
+	   updated: 19 Jul 2014 - add more help text, tidy up comments and code
+	   updated: 06 Aug 2014 - enabled the -k flag to alter the table header characters
+	   updated: 28 Sep 2014 -  changed default output when run with no params, add -h
+	                                   to display the help info and also still call flags.Usage()
+	   updated: 09 Dec 2014 - minor tidy up and first 'release' provided on GitHub
+	   updated: 27 Aug 2016 - table name and csv file help output minor changes. Minor cosmetic stuff. Version 1.1
+	   updated: 12 Apr 2023 - minor cosmetic changes & build binary for macOS M1 architecture in Makefile. Version 1.2
 */
 package main
 
@@ -41,8 +40,7 @@ import (
 // TODO - maybe check for newer version and update if needed?
 // TODO - make more stdout/stderror friendly for command line use
 // TODO - provide option to use with pipes to feed-in csv file and pipe output
-//
-var appversion string = "1.1"
+var appversion string = "1.2"
 
 // below used by flag for command line args
 var tableName string
@@ -54,7 +52,6 @@ var helpMe bool
 // init() function - always runs before main() - used here to set-up required flags variables
 // from the command line parameters provided by the user when they run the app
 // TODO:  add -s for silent (no output unless error) | add -v to just display current version (how to add build date too?)
-//
 func init() {
 	// IntVar; StringVar; BoolVar all required: variable, cmd line flag, initial value, description used by flag.Usage() on error / help
 	flag.StringVar(&tableName, "t", "", "\tUSE: '-t tablename' where tablename is the name of the SQLite table to hold your CSV file data [MANDATORY]")
@@ -64,9 +61,7 @@ func init() {
 	flag.BoolVar(&helpMe, "h", false, "\tUSE: '-h' to provide more detailed help on using this program")
 }
 
-//
-//  FUNCTION: create a string to be used as the filename for the output SQL data file - return it
-//
+// FUNCTION: create a string to be used as the filename for the output SQL data file - return it
 func SQLFileName() (filename string) {
 	// include the name of the csv file from command line (ie csvFileName)
 	// remove any path etc
@@ -88,11 +83,9 @@ func SQLFileName() (filename string) {
 	return sqlOutFile
 }
 
-//
-//  FUNCTION: display a banner and help information on the screen.
-//  Information is displayed when the program is run with -h
-//  command line parameter - so assumes you want addtional help
-//
+// FUNCTION: display a banner and help information on the screen.
+// Information is displayed when the program is run with -h
+// command line parameter - so assumes you want addtional help
 func printBanner() {
 	// add the help and about text to the variable 'about' in the form shown below
 	// as a block of text. This will displayed to the screen later.
@@ -389,13 +382,11 @@ func main() {
 	fmt.Println("\tThe conversion took", end.Sub(start), "to run.\n\nAll is well.\n")
 }
 
+// cleanHeader receives a string and removes the characters: space | - + @ # / \ : ( ) '
+// Function is used to clean up the CSV file header fields as they will be used for column table names
+// in our SQLIte database. Therefore we don't want any odd characters for our table column names
 //
-//  cleanHeader receives a string and removes the characters: space | - + @ # / \ : ( ) '
-//  Function is used to clean up the CSV file header fields as they will be used for column table names
-//  in our SQLIte database. Therefore we don't want any odd characters for our table column names
-//
-//  TODO : consider using: strings.NewReplacer function instead?
-//
+// TODO : consider using: strings.NewReplacer function instead?
 func cleanHeader(headField string) string {
 	// ok - remove any spaces and replace with _
 	headField = strings.Replace(headField, " ", "_", -1)
