@@ -96,7 +96,14 @@ make all
 
 ## Downloading Binary Version
 
-Pre-compiled binaries are available from the `csv2sql` Release page below. These are provide for Windows (32bit and 64bit), MacOSX (64bit), and Linux (64bit):
+Pre-compiled binaries are available from the `csv2sql` Release page as linked below:
+
+**Release 1.2**: These are provide for Windows (64bit), macOS (64bit Intel & Apple Silicon M1/M2 arm64), and Linux (64bit):
+
+- [csv2sql Release 1.2](https://github.com/wiremoons/csv2sql/releases/tag/1.2)
+
+
+**Release 1.0**: These are provide for Windows (32bit and 64bit), MacOSX (64bit), and Linux (64bit):
 
 - [csv2sql Release 1.0](https://github.com/wiremoons/csv2sql/releases/tag/1.0)
 
