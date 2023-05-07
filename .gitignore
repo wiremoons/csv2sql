@@ -34,6 +34,7 @@
 # Compiled versions from 'go build'
 csv2sql
 csv2sql.exe
+bin/
 
 # ignore cscope and ctags databases
 cscope.out
