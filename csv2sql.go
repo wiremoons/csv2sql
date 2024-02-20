@@ -48,6 +48,7 @@ var csvFileName string
 var keepOrigCols bool
 var debugSwitch bool
 var helpMe bool
+var separatorVal string
 
 // init() function - always runs before main() - used here to set-up required flags variables
 // from the command line parameters provided by the user when they run the app
@@ -56,6 +57,7 @@ func init() {
 	// IntVar; StringVar; BoolVar all required: variable, cmd line flag, initial value, description used by flag.Usage() on error / help
 	flag.StringVar(&tableName, "t", "", "\tUSE: '-t tablename' where tablename is the name of the SQLite table to hold your CSV file data [MANDATORY]")
 	flag.StringVar(&csvFileName, "f", "", "\tUSE: '-f filename.csv' where filename.csv is the name and path to a CSV file that contains your data for conversion [MANDATORY]")
+	flag.StringVar(&separatorVal, "s", ",", "\tUSE: for tab '-s=\"\\t\" or '-s=\",\"' [OPTIONAL]")
 	flag.BoolVar(&keepOrigCols, "k", false, "\tUSE: '-k=true' to keep original csv header fields as the SQL table column names")
 	flag.BoolVar(&debugSwitch, "d", false, "\tUSE: '-d=true' to include additional debug output when run")
 	flag.BoolVar(&helpMe, "h", false, "\tUSE: '-h' to provide more detailed help on using this program")
@@ -226,6 +228,16 @@ func main() {
 	// CSV file
 	// TODO : is there an error from this to check?
 	reader := csv.NewReader(file)
+
+	// TSV support
+	if separatorVal != "" {
+		if debugSwitch {
+			fmt.Printf("Using separator: %s\n", separatorVal)
+		}
+		if separatorVal == "\\t" {
+			reader.Comma = '\t'
+		}
+	}
 
 	//-------------------------------------------------------------------------
 	// open and prepare the SQL output file
