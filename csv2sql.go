@@ -338,7 +338,7 @@ func main() {
 			if len(record[i]) == 0 || record[i] == "NULL" {
 				strbuffer.WriteString("NULL")
 			} else {
-				strbuffer.WriteString("\"" + record[i] + "\"")
+				strbuffer.WriteString("\"" + strings.Replace(record[i], "\"", "\"\"", -1) + "\"") /* escape " with "" */
 			}
 			// if we have not reached the last record yet - add a coma also to the output
 			if i < len(record)-1 {
